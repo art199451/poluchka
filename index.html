@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Получка</title>
+    <meta name="theme-color" content="#121212">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>">
+    <style>
+        :root {
+            --primary: #00c853;
+            --primary-dark: #00a844;
+            --danger: #ff5252;
+            --danger-dark: #ff2a2a;
+            --info: #2196f3;
+            --bg-dark: #121212;
+            --bg-card: #1e1e1e;
+            --bg-input: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #888888;
+            --border: #444444;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --safe-area-top: env(safe-area-inset-top, 0px);
+            --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 0;
+            overflow-x: hidden;
+            height: 100vh;
+            height: -webkit-fill-available;
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            height: -webkit-fill-available;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #1a1a2e);
+            padding: 16px 20px;
+            padding-top: calc(16px + var(--safe-area-top));
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header h1 i {
+            color: var(--primary);
+            font-size: 1.6rem;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 16px;
+            padding-bottom: calc(16px + var(--safe-area-bottom));
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 14px 8px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: #000;
+            box-shadow: var(--shadow);
+        }
+
+        /* SECTIONS */
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title i {
+            font-size: 1.1rem;
+        }
+
+        /* FORM ELEMENTS */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .required::after {
+            content: " *";
+            color: var(--danger);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* RADIO GROUP */
+        .radio-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .radio-option {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .radio-option.active {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+            font-weight: 600;
+        }
+
+        .radio-option input {
+            display: none;
+        }
+
+        /* SALARY PERIOD */
+        .salary-period {
+            background: rgba(255, 82, 82, 0.1);
+            border: 2px solid rgba(255, 82, 82, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-top: 12px;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; max-height: 0; }
+            to { opacity: 1; max-height: 200px; }
+        }
+
+        .period-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .period-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .period-label {
+            min-width: 60px;
+            color: var(--danger);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        /* BUTTONS */
+        .btn {
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            user-select: none;
+            margin-top: 8px;
+        }
+
+        .btn:active {
+            transform: translateY(2px);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .btn-primary:active {
+            background: var(--primary-dark);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        .btn-danger:active {
+            background: var(--danger-dark);
+        }
+
+        .btn-sm {
+            padding: 12px;
+            font-size: 0.9rem;
+        }
+
+        /* SUMMARY */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .summary-item {
+            background: var(--bg-input);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            text-align: center;
+        }
+
+        .summary-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .income { color: var(--primary); }
+        .expense { color: var(--danger); }
+        .balance { color: var(--info); }
+
+        /* FILTERS */
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .filter-btn {
+            padding: 10px 16px;
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--primary);
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+        }
+
+        /* TRANSACTIONS */
+        .transactions-list {
+            max-height: 50vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .transaction-item {
+            background: var(--bg-input);
+            border-left: 4px solid var(--primary);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+            user-select: none;
+        }
+
+        .transaction-item:active {
+            transform: translateX(4px);
+        }
+
+        .transaction-item.expense {
+            border-left-color: var(--danger);
+        }
+
+        .transaction-info {
+            flex: 1;
+        }
+
+        .transaction-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .transaction-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .transaction-period {
+            font-size: 0.8rem;
+            color: var(--danger);
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        .transaction-amount {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* CALENDAR MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            padding: var(--safe-area-top) 0 var(--safe-area-bottom);
+        }
+
+        .modal.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.8rem;
+            cursor: pointer;
+            padding: 4px 12px;
+        }
+
+        .modal-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .calendar-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .nav-btn {
+            background: var(--bg-input);
+            border: none;
+            color: var(--text-primary);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .current-month {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            padding: 12px 4px;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .calendar-day:hover, .calendar-day:active {
+            background: var(--bg-input);
+        }
+
+        .calendar-day.selected {
+            background: var(--primary);
+            color: #000;
+            font-weight: 700;
+        }
+
+        .calendar-day.today {
+            border: 2px solid var(--primary);
+        }
+
+        .calendar-day.disabled {
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .calendar-day.disabled:hover {
+            background: transparent;
+        }
+
+        .calendar-range-start, .calendar-range-end {
+            background: var(--primary);
+            color: #000;
+            font-weight: 700;
+        }
+
+        .calendar-range-between {
+            background: rgba(0, 200, 83, 0.3);
+        }
+
+        .calendar-info {
+            background: var(--bg-input);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-top: 20px;
+            text-align: center;
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            padding: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* LOADING */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .summary-value {
+                font-size: 1.2rem;
+            }
+            
+            .modal-content {
+                padding: 16px;
+            }
+            
+            .calendar-day {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+        }
+
+        /* SWIPE HINT */
+        .swipe-hint {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            text-align: center;
+            z-index: 100;
+            animation: fadeInOut 3s ease-in-out;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+            20%, 80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- LOADING OVERLAY -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+        </div>
+
+        <!-- HEADER -->
+        <header class="header">
+            <h1><i class="fas fa-wallet"></i> Получка</h1>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- TABS -->
+            <div class="tabs">
+                <div class="tab active" data-tab="add">Добавить</div>
+                <div class="tab" data-tab="history">История</div>
+                <div class="tab" data-tab="summary">Сводка</div>
+            </div>
+
+            <!-- ADD TRANSACTION SECTION -->
+            <section class="section active" id="addSection">
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-plus-circle"></i> Новая запись</h2>
+                    
+                    <div class="form-group">
+                        <label class="required">Сумма (₽)</label>
+                        <input type="number" id="amount" placeholder="0.00" min="0" step="0.01" inputmode="decimal">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Комментарий</label>
+                        <input type="text" id="description" placeholder="Например: Аванс" maxlength="50">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="required">Тип операции</label>
+                        <div class="radio-group">
+                            <div class="radio-option active" data-value="income">
+                                <i class="fas fa-money-bill-wave"></i> Заработок
+                                <input type="radio" name="type" value="income" checked>
+                            </div>
+                            <div class="radio-option" data-value="expense">
+                                <i class="fas fa-hand-holding-usd"></i> Выдача
+                                <input type="radio" name="type" value="expense">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="required">Дата операции</label>
+                        <input type="date" id="date">
+                    </div>
+
+                    <!-- Salary Period (only for expense) -->
+                    <div class="salary-period" id="salaryPeriod" style="display: none;">
+                        <div class="card-title"><i class="fas fa-calendar-alt"></i> Период выдачи зарплаты</div>
+                        <div class="form-group">
+                            <label class="required">С</label>
+                            <input type="date" id="salaryPeriodStart">
+                        </div>
+                        <div class="form-group">
+                            <label class="required">По</label>
+                            <input type="date" id="salaryPeriodEnd">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" id="addBtn">
+                        <i class="fas fa-plus"></i> Добавить запись
+                    </button>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-bolt"></i> Быстрые действия</h2>
+                    <button class="btn btn-danger btn-sm" id="clearBtn">
+                        <i class="fas fa-trash"></i> Очистить все
+                    </button>
+                </div>
+            </section>
+
+            <!-- HISTORY SECTION -->
+            <section class="section" id="historySection">
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-filter"></i> Фильтр периода</h2>
+                    
+                    <div class="filters">
+                        <div class="filter-btn" data-filter="range">Диапазон</div>
+                        <div class="filter-btn" data-filter="day">День</div>
+                        <div class="filter-btn" data-filter="week">Неделя</div>
+                        <div class="filter-btn" data-filter="month">Месяц</div>
+                        <div class="filter-btn" data-filter="year">Год</div>
+                        <div class="filter-btn active" data-filter="all">Все</div>
+                    </div>
+
+                    <div class="calendar-info" id="periodInfo">
+                        Выбраны все записи
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-history"></i> История операций</h2>
+                    
+                    <div class="transactions-list" id="transactionsList">
+                        <!-- Transactions will be loaded here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- SUMMARY SECTION -->
+            <section class="section" id="summarySection">
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <div class="summary-label">Заработок</div>
+                        <div class="summary-value income" id="totalIncome">0 ₽</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Выдача</div>
+                        <div class="summary-value expense" id="totalExpense">0 ₽</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Баланс</div>
+                        <div class="summary-value balance" id="totalBalance">0 ₽</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-chart-pie"></i> Статистика</h2>
+                    <div id="statsInfo">
+                        <p>Общее количество записей: <span id="totalCount">0</span></p>
+                        <p>Количество заработков: <span id="incomeCount">0</span></p>
+                        <p>Количество выдач: <span id="expenseCount">0</span></p>
+                        <p>Средний заработок: <span id="avgIncome">0 ₽</span></p>
+                        <p>Средняя выдача: <span id="avgExpense">0 ₽</span></p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-database"></i> Данные</h2>
+                    <button class="btn btn-primary btn-sm" id="exportBtn">
+                        <i class="fas fa-download"></i> Экспорт данных
+                    </button>
+                    <button class="btn btn-primary btn-sm" id="importBtn" style="margin-top: 8px;">
+                        <i class="fas fa-upload"></i> Импорт данных
+                    </button>
+                    <button class="btn btn-danger btn-sm" id="resetBtn" style="margin-top: 8px;">
+                        <i class="fas fa-redo"></i> Сбросить всё
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- CALENDAR MODAL -->
+    <div class="modal" id="calendarModal">
+        <div class="modal-header">
+            <div class="modal-title" id="calendarTitle">Выбор дня</div>
+            <button class="close-btn" id="closeCalendar">&times;</button>
+        </div>
+        
+        <div class="modal-content">
+            <div class="calendar-navigation">
+                <button class="nav-btn" id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                <div class="current-month" id="currentMonth">Январь 2024</div>
+                <button class="nav-btn" id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- Calendar will be generated here -->
+            </div>
+            
+            <div class="calendar-info" id="calendarInfo">
+                Выберите день
+            </div>
+        </div>
+        
+        <div class="modal-actions">
+            <button class="btn btn-danger" id="cancelCalendar">Отмена</button>
+            <button class="btn btn-primary" id="applyCalendar">Применить</button>
+        </div>
+    </div>
+
+    <script>
+        // ============ APP CONFIG ============
+        const APP_NAME = 'Получка';
+        const STORAGE_KEY = 'salaryTrackerData';
+        const SETTINGS_KEY = 'salaryTrackerSettings';
+        
+        // ============ APP STATE ============
+        let transactions = [];
+        let activeTab = 'add';
+        let activeFilter = 'all';
+        let currentDate = new Date();
+        let selectedDate = new Date();
+        let selectedRangeStart = null;
+        let selectedRangeEnd = null;
+        let selectedWeekStart = null;
+        let selectedWeekEnd = null;
+        let selectedMonth = null;
+        let selectedYear = null;
+        let tempRangeStart = null;
+        let tempRangeEnd = null;
+        let currentFilterType = null;
+
+        // ============ INITIALIZATION ============
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            setupEventListeners();
+            loadData();
+            render();
+            
+            // Show swipe hint on first visit
+            if (!localStorage.getItem('shownSwipeHint')) {
+                setTimeout(() => {
+                    showSwipeHint();
+                    localStorage.setItem('shownSwipeHint', 'true');
+                }, 1000);
+            }
+        });
+
+        function initApp() {
+            // Set today's date
+            const today = new Date();
+            document.getElementById('date').value = today.toISOString().split('T')[0];
+            
+            // Set default salary period (last 7 days)
+            const weekAgo = new Date(today);
+            weekAgo.setDate(today.getDate() - 7);
+            document.getElementById('salaryPeriodStart').value = weekAgo.toISOString().split('T')[0];
+            document.getElementById('salaryPeriodEnd').value = today.toISOString().split('T')[0];
+            
+            // Initialize calendar
+            renderCalendar();
+            
+            // Show loading briefly
+            document.getElementById('loading').classList.add('active');
+            setTimeout(() => {
+                document.getElementById('loading').classList.remove('active');
+            }, 500);
+        }
+
+        function showSwipeHint() {
+            const hint = document.createElement('div');
+            hint.className = 'swipe-hint';
+            hint.innerHTML = '↔️ Свайпайте для переключения вкладок';
+            document.body.appendChild(hint);
+            
+            setTimeout(() => {
+                hint.remove();
+            }, 3000);
+        }
+
+        // ============ EVENT LISTENERS ============
+        function setupEventListeners() {
+            // Tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    switchTab(tab.dataset.tab);
+                });
+            });
+
+            // Swipe gesture for tabs
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            document.querySelector('.main-content').addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+            
+            document.querySelector('.main-content').addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+                
+                if (Math.abs(diff) > swipeThreshold) {
+                    const tabs = ['add', 'history', 'summary'];
+                    const currentIndex = tabs.indexOf(activeTab);
+                    
+                    if (diff > 0 && currentIndex < tabs.length - 1) {
+                        // Swipe left - next tab
+                        switchTab(tabs[currentIndex + 1]);
+                    } else if (diff < 0 && currentIndex > 0) {
+                        // Swipe right - previous tab
+                        switchTab(tabs[currentIndex - 1]);
+                    }
+                }
+            }
+
+            // Radio buttons
+            document.querySelectorAll('.radio-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.radio-option').forEach(o => o.classList.remove('active'));
+                    option.classList.add('active');
+                    const radio = option.querySelector('input');
+                    radio.checked = true;
+                    
+                    // Show/hide salary period
+                    const salaryPeriod = document.getElementById('salaryPeriod');
+                    if (radio.value === 'expense') {
+                        salaryPeriod.style.display = 'block';
+                    } else {
+                        salaryPeriod.style.display = 'none';
+                    }
+                });
+            });
+
+            // Add transaction
+            document.getElementById('addBtn').addEventListener('click', addTransaction);
+            
+            // Enter key on amount field
+            document.getElementById('amount').addEventListener('keypress', e => {
+                if (e.key === 'Enter') {
+                    addTransaction();
+                }
+            });
+
+            // Clear all
+            document.getElementById('clearBtn').addEventListener('click', () => {
+                if (confirm('⚠️ Удалить ВСЕ записи? Это действие нельзя отменить.')) {
+                    clearAll();
+                }
+            });
+
+            // Reset everything
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                if (confirm('⚠️ Сбросить ВСЕ данные и настройки? Это действие нельзя отменить.')) {
+                    localStorage.clear();
+                    location.reload();
+                }
+            });
+
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const filter = btn.dataset.filter;
+                    if (filter === 'all') {
+                        setActiveFilter('all');
+                        render();
+                    } else {
+                        showCalendar(filter);
+                    }
+                });
+            });
+
+            // Calendar
+            document.getElementById('closeCalendar').addEventListener('click', closeCalendar);
+            document.getElementById('cancelCalendar').addEventListener('click', closeCalendar);
+            document.getElementById('applyCalendar').addEventListener('click', applyCalendar);
+            document.getElementById('prevMonth').addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                renderCalendar();
+            });
+            document.getElementById('nextMonth').addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                renderCalendar();
+            });
+
+            // Export/Import
+            document.getElementById('exportBtn').addEventListener('click', exportData);
+            document.getElementById('importBtn').addEventListener('click', () => {
+                document.getElementById('importFile').click();
+            });
+
+            // Create hidden file input for import
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.id = 'importFile';
+            fileInput.accept = '.json';
+            fileInput.style.display = 'none';
+            fileInput.addEventListener('change', handleFileImport);
+            document.body.appendChild(fileInput);
+
+            // Prevent accidental refresh
+            window.addEventListener('beforeunload', (e) => {
+                if (transactions.length > 0) {
+                    e.preventDefault();
+                    e.returnValue = 'Есть несохраненные данные. Вы уверены, что хотите уйти?';
+                }
+            });
+        }
+
+        // ============ TAB MANAGEMENT ============
+        function switchTab(tabName) {
+            activeTab = tabName;
+            
+            // Update tab UI
+            document.querySelectorAll('.tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.tab === tabName);
+            });
+            
+            // Show/hide sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.toggle('active', section.id === `${tabName}Section`);
+            });
+            
+            // Render if needed
+            if (tabName === 'history' || tabName === 'summary') {
+                render();
+            }
+        }
+
+        // ============ DATE HELPER FUNCTIONS ============
+        function formatDate(date) {
+            return date.toLocaleDateString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        function formatMonth(date) {
+            return date.toLocaleDateString('ru-RU', {
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+
+        function isSameDay(a, b) {
+            return a.getFullYear() === b.getFullYear() &&
+                   a.getMonth() === b.getMonth() &&
+                   a.getDate() === b.getDate();
+        }
+
+        function startOfWeek(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = (day === 0 ? -6 : 1 - day);
+            d.setDate(d.getDate() + diff);
+            d.setHours(0, 0, 0, 0);
+            return d;
+        }
+
+        function endOfWeek(date) {
+            const start = startOfWeek(date);
+            const end = new Date(start);
+            end.setDate(end.getDate() + 6);
+            end.setHours(23, 59, 59, 999);
+            return end;
+        }
+
+        function startOfMonth(date) {
+            const d = new Date(date);
+            d.setDate(1);
+            d.setHours(0, 0, 0, 0);
+            return d;
+        }
+
+        function endOfMonth(date) {
+            const d = new Date(date);
+            d.setMonth(d.getMonth() + 1);
+            d.setDate(0);
+            d.setHours(23, 59, 59, 999);
+            return d;
+        }
+
+        function startOfYear(date) {
+            const d = new Date(date);
+            d.setMonth(0, 1);
+            d.setHours(0, 0, 0, 0);
+            return d;
+        }
+
+        function endOfYear(date) {
+            const d = new Date(date);
+            d.setMonth(11, 31);
+            d.setHours(23, 59, 59, 999);
+            return d;
+        }
+
+        // ============ TRANSACTION MANAGEMENT ============
+        function addTransaction() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            const description = document.getElementById('description').value.trim();
+            const date = document.getElementById('date').value;
+            const type = document.querySelector('input[name="type"]:checked').value;
+            
+            // Validation
+            if (!amount || amount <= 0) {
+                alert('❗ Введите сумму');
+                document.getElementById('amount').focus();
+                return;
+            }
+            
+            if (!date) {
+                alert('❗ Выберите дату');
+                document.getElementById('date').focus();
+                return;
+            }
+            
+            // For expense, validate salary period
+            let salaryPeriodStart = null;
+            let salaryPeriodEnd = null;
+            
+            if (type === 'expense') {
+                salaryPeriodStart = document.getElementById('salaryPeriodStart').value;
+                salaryPeriodEnd = document.getElementById('salaryPeriodEnd').value;
+                
+                if (!salaryPeriodStart || !salaryPeriodEnd) {
+                    alert('❗ Для выдачи укажите период зарплаты');
+                    return;
+                }
+                
+                if (new Date(salaryPeriodEnd) < new Date(salaryPeriodStart)) {
+                    alert('❗ Дата окончания не может быть раньше даты начала');
+                    return;
+                }
+            }
+            
+            // Create transaction
+            const transaction = {
+                id: Date.now(),
+                amount: Math.round(amount * 100) / 100, // Round to 2 decimals
+                description: description || (type === 'income' ? 'Заработок' : 'Выдача'),
+                type: type,
+                date: date,
+                created: new Date().toISOString()
+            };
+            
+            if (type === 'expense') {
+                transaction.salaryPeriodStart = salaryPeriodStart;
+                transaction.salaryPeriodEnd = salaryPeriodEnd;
+            }
+            
+            // Add to array
+            transactions.unshift(transaction); // Add to beginning
+            saveData();
+            
+            // Reset form
+            document.getElementById('amount').value = '';
+            document.getElementById('description').value = '';
+            
+            // Show success
+            showNotification('✅ Запись добавлена');
+            
+            // Switch to history tab and render
+            switchTab('history');
+        }
+
+        function removeTransaction(id) {
+            if (confirm('🗑️ Удалить эту запись?')) {
+                transactions = transactions.filter(t => t.id !== id);
+                saveData();
+                render();
+                showNotification('✅ Запись удалена');
+            }
+        }
+
+        function clearAll() {
+            transactions = [];
+            saveData();
+            render();
+            showNotification('✅ Все записи удалены');
+        }
+
+        // ============ FILTERING ============
+        function setActiveFilter(filter) {
+            activeFilter = filter;
+            
+            // Update UI
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+            });
+            
+            // Update period info
+            updatePeriodInfo();
+        }
+
+        function getFilteredTransactions() {
+            const today = new Date();
+            
+            return transactions.filter(transaction => {
+                const transactionDate = new Date(transaction.date);
+                transactionDate.setHours(0, 0, 0, 0);
+                
+                switch (activeFilter) {
+                    case 'day':
+                        return isSameDay(transactionDate, selectedDate);
+                        
+                    case 'week':
+                        if (!selectedWeekStart || !selectedWeekEnd) {
+                            const weekStart = startOfWeek(today);
+                            const weekEnd = endOfWeek(weekStart);
+                            selectedWeekStart = weekStart;
+                            selectedWeekEnd = weekEnd;
+                        }
+                        return transactionDate >= selectedWeekStart && transactionDate <= selectedWeekEnd;
+                        
+                    case 'month':
+                        if (!selectedMonth) selectedMonth = today;
+                        const monthStart = startOfMonth(selectedMonth);
+                        const monthEnd = endOfMonth(selectedMonth);
+                        return transactionDate >= monthStart && transactionDate <= monthEnd;
+                        
+                    case 'year':
+                        if (!selectedYear) selectedYear = today;
+                        const yearStart = startOfYear(selectedYear);
+                        const yearEnd = endOfYear(selectedYear);
+                        return transactionDate >= yearStart && transactionDate <= yearEnd;
+                        
+                    case 'range':
+                        if (!selectedRangeStart || !selectedRangeEnd) return false;
+                        return transactionDate >= selectedRangeStart && transactionDate <= selectedRangeEnd;
+                        
+                    case 'all':
+                    default:
+                        return true;
+                }
+            });
+        }
+
+        function updatePeriodInfo() {
+            const info = document.getElementById('periodInfo');
+            const today = new Date();
+            
+            switch (activeFilter) {
+                case 'day':
+                    info.textContent = `День: ${formatDate(selectedDate)}`;
+                    break;
+                case 'week':
+                    if (selectedWeekStart && selectedWeekEnd) {
+                        info.textContent = `Неделя: ${formatDate(selectedWeekStart)} - ${formatDate(selectedWeekEnd)}`;
+                    } else {
+                        const weekStart = startOfWeek(today);
+                        const weekEnd = endOfWeek(weekStart);
+                        info.textContent = `Текущая неделя: ${formatDate(weekStart)} - ${formatDate(weekEnd)}`;
+                    }
+                    break;
+                case 'month':
+                    info.textContent = `Месяц: ${formatMonth(selectedMonth || today)}`;
+                    break;
+                case 'year':
+                    info.textContent = `Год: ${(selectedYear || today).getFullYear()}`;
+                    break;
+                case 'range':
+                    if (selectedRangeStart && selectedRangeEnd) {
+                        info.textContent = `Диапазон: ${formatDate(selectedRangeStart)} - ${formatDate(selectedRangeEnd)}`;
+                    } else {
+                        info.textContent = 'Диапазон не выбран';
+                    }
+                    break;
+                case 'all':
+                default:
+                    info.textContent = 'Все записи';
+                    break;
+            }
+        }
+
+        // ============ CALENDAR ============
+        function showCalendar(filterType) {
+            currentFilterType = filterType;
+            const modal = document.getElementById('calendarModal');
+            const title = document.getElementById('calendarTitle');
+            const info = document.getElementById('calendarInfo');
+            
+            // Reset temporary range
+            tempRangeStart = null;
+            tempRangeEnd = null;
+            
+            // Set modal content based on filter type
+            switch(filterType) {
+                case 'day':
+                    title.textContent = 'Выбор дня';
+                    info.textContent = 'Выберите день';
+                    break;
+                case 'week':
+                    title.textContent = 'Выбор недели';
+                    info.textContent = 'Выберите любой день недели';
+                    break;
+                case 'month':
+                    title.textContent = 'Выбор месяца';
+                    info.textContent = 'Выберите любой день месяца';
+                    break;
+                case 'year':
+                    title.textContent = 'Выбор года';
+                    info.textContent = 'Выберите любой день года';
+                    break;
+                case 'range':
+                    title.textContent = 'Выбор диапазона';
+                    info.textContent = 'Выберите начальную дату';
+                    break;
+            }
+            
+            // Show modal
+            modal.classList.add('active');
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const monthYear = document.getElementById('currentMonthYear');
+            
+            // Set month/year
+            const monthYearText = currentDate.toLocaleDateString('ru-RU', {
+                month: 'long',
+                year: 'numeric'
+            });
+            document.getElementById('currentMonth').textContent = monthYearText;
+            
+            // Get first and last day of month
+            const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+            
+            // Get starting day (0 = Sunday, 1 = Monday)
+            let startDay = firstDay.getDay();
+            if (startDay === 0) startDay = 7; // Make Monday first
+            
+            // Clear calendar
+            calendarGrid.innerHTML = '';
+            
+            // Add day headers
+            const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+            days.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-day-header';
+                dayHeader.textContent = day;
+                calendarGrid.appendChild(dayHeader);
+            });
+            
+            // Add empty cells for days before first day
+            for (let i = 1; i < startDay; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'calendar-day disabled';
+                calendarGrid.appendChild(empty);
+            }
+            
+            // Add days of month
+            const today = new Date();
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'calendar-day';
+                dayCell.textContent = day;
+                
+                const cellDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+                
+                // Check if today
+                if (isSameDay(cellDate, today)) {
+                    dayCell.classList.add('today');
+                }
+                
+                // Check if selected
+                if (currentFilterType === 'day' && isSameDay(cellDate, selectedDate)) {
+                    dayCell.classList.add('selected');
+                }
+                
+                // Check for range selection
+                if (currentFilterType === 'range') {
+                    if (tempRangeStart && isSameDay(cellDate, tempRangeStart)) {
+                        dayCell.classList.add('calendar-range-start');
+                    }
+                    if (tempRangeEnd && isSameDay(cellDate, tempRangeEnd)) {
+                        dayCell.classList.add('calendar-range-end');
+                    }
+                    if (tempRangeStart && tempRangeEnd && cellDate >= tempRangeStart && cellDate <= tempRangeEnd) {
+                        dayCell.classList.add('calendar-range-between');
+                    }
+                }
+                
+                // Check for week selection
+                if (currentFilterType === 'week' && selectedWeekStart && selectedWeekEnd) {
+                    if (cellDate >= selectedWeekStart && cellDate <= selectedWeekEnd) {
+                        dayCell.classList.add('calendar-range-between');
+                    }
+                    if (isSameDay(cellDate, selectedWeekStart)) {
+                        dayCell.classList.add('calendar-range-start');
+                    }
+                    if (isSameDay(cellDate, selectedWeekEnd)) {
+                        dayCell.classList.add('calendar-range-end');
+                    }
+                }
+                
+                // Add click handler
+                dayCell.addEventListener('click', () => handleDateClick(cellDate));
+                calendarGrid.appendChild(dayCell);
+            }
+        }
+
+        function handleDateClick(date) {
+            const info = document.getElementById('calendarInfo');
+            
+            switch (currentFilterType) {
+                case 'day':
+                    selectedDate = date;
+                    info.textContent = `Выбран день: ${formatDate(date)}`;
+                    renderCalendar();
+                    break;
+                    
+                case 'week':
+                    selectedWeekStart = startOfWeek(date);
+                    selectedWeekEnd = endOfWeek(selectedWeekStart);
+                    info.textContent = `Неделя: ${formatDate(selectedWeekStart)} - ${formatDate(selectedWeekEnd)}`;
+                    renderCalendar();
+                    break;
+                    
+                case 'month':
+                    selectedMonth = date;
+                    info.textContent = `Месяц: ${formatMonth(date)}`;
+                    renderCalendar();
+                    break;
+                    
+                case 'year':
+                    selectedYear = date;
+                    info.textContent = `Год: ${date.getFullYear()}`;
+                    renderCalendar();
+                    break;
+                    
+                case 'range':
+                    if (!tempRangeStart || (tempRangeStart && tempRangeEnd)) {
+                        // Start new selection
+                        tempRangeStart = date;
+                        tempRangeEnd = null;
+                        info.textContent = `Начало: ${formatDate(date)}. Выберите конец`;
+                    } else {
+                        // Complete selection
+                        tempRangeEnd = date;
+                        
+                        // Ensure start is before end
+                        if (tempRangeStart > tempRangeEnd) {
+                            [tempRangeStart, tempRangeEnd] = [tempRangeEnd, tempRangeStart];
+                        }
+                        
+                        info.textContent = `Диапазон: ${formatDate(tempRangeStart)} - ${formatDate(tempRangeEnd)}`;
+                    }
+                    renderCalendar();
+                    break;
+            }
+        }
+
+        function applyCalendar() {
+            setActiveFilter(currentFilterType);
+            
+            // Save selections
+            if (currentFilterType === 'range' && tempRangeStart && tempRangeEnd) {
+                selectedRangeStart = new Date(tempRangeStart);
+                selectedRangeEnd = new Date(tempRangeEnd);
+            }
+            
+            closeCalendar();
+            render();
+        }
+
+        function closeCalendar() {
+            document.getElementById('calendarModal').classList.remove('active');
+        }
+
+        // ============ RENDER FUNCTIONS ============
+        function render() {
+            renderTransactions();
+            renderSummary();
+            renderStats();
+        }
+
+        function renderTransactions() {
+            const container = document.getElementById('transactionsList');
+            const filtered = getFilteredTransactions();
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <h3>Нет записей</h3>
+                        <p>Добавьте первую запись в разделе "Добавить"</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            filtered.forEach(transaction => {
+                const date = new Date(transaction.date);
+                const formattedDate = formatDate(date);
+                
+                let periodInfo = '';
+                if (transaction.type === 'expense' && transaction.salaryPeriodStart && transaction.salaryPeriodEnd) {
+                    const start = formatDate(new Date(transaction.salaryPeriodStart));
+                    const end = formatDate(new Date(transaction.salaryPeriodEnd));
+                    periodInfo = `<div class="transaction-period">Период: ${start} - ${end}</div>`;
+                }
+                
+                html += `
+                    <div class="transaction-item ${transaction.type}" data-id="${transaction.id}">
+                        <div class="transaction-info">
+                            <div class="transaction-title">${transaction.description}</div>
+                            <div class="transaction-meta">
+                                ${formattedDate} • ${transaction.type === 'income' ? 'Заработок' : 'Выдача'}
+                            </div>
+                            ${periodInfo}
+                        </div>
+                        <div class="transaction-amount" style="color: ${transaction.type === 'income' ? 'var(--primary)' : 'var(--danger)'}">
+                            ${transaction.type === 'income' ? '+' : '-'}${transaction.amount.toFixed(2)} ₽
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            
+            // Add click handlers for removal
+            container.querySelectorAll('.transaction-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('transaction-item')) {
+                        const id = parseInt(item.dataset.id);
+                        removeTransaction(id);
+                    }
+                });
+            });
+        }
+
+        function renderSummary() {
+            const filtered = getFilteredTransactions();
+            
+            let totalIncome = 0;
+            let totalExpense = 0;
+            
+            filtered.forEach(t => {
+                if (t.type === 'income') {
+                    totalIncome += t.amount;
+                } else {
+                    totalExpense += t.amount;
+                }
+            });
+            
+            const totalBalance = totalIncome - totalExpense;
+            
+            document.getElementById('totalIncome').textContent = totalIncome.toFixed(2) + ' ₽';
+            document.getElementById('totalExpense').textContent = totalExpense.toFixed(2) + ' ₽';
+            document.getElementById('totalBalance').textContent = totalBalance.toFixed(2) + ' ₽';
+        }
+
+        function renderStats() {
+            const total = transactions.length;
+            const incomeCount = transactions.filter(t => t.type === 'income').length;
+            const expenseCount = transactions.filter(t => t.type === 'expense').length;
+            
+            const totalIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const totalExpense = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+            
+            const avgIncome = incomeCount > 0 ? totalIncome / incomeCount : 0;
+            const avgExpense = expenseCount > 0 ? totalExpense / expenseCount : 0;
+            
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('incomeCount').textContent = incomeCount;
+            document.getElementById('expenseCount').textContent = expenseCount;
+            document.getElementById('avgIncome').textContent = avgIncome.toFixed(2) + ' ₽';
+            document.getElementById('avgExpense').textContent = avgExpense.toFixed(2) + ' ₽';
+        }
+
+        // ============ DATA PERSISTENCE ============
+        function saveData() {
+            const data = {
+                transactions: transactions,
+                settings: {
+                    activeFilter: activeFilter,
+                    selectedDate: selectedDate.toISOString(),
+                    selectedRangeStart: selectedRangeStart ? selectedRangeStart.toISOString() : null,
+                    selectedRangeEnd: selectedRangeEnd ? selectedRangeEnd.toISOString() : null,
+                    selectedWeekStart: selectedWeekStart ? selectedWeekStart.toISOString() : null,
+                    selectedWeekEnd: selectedWeekEnd ? selectedWeekEnd.toISOString() : null,
+                    selectedMonth: selectedMonth ? selectedMonth.toISOString() : null,
+                    selectedYear: selectedYear ? selectedYear.toISOString() : null
+                }
+            };
+            
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) {
+                console.error('Ошибка сохранения:', e);
+                showNotification('❌ Ошибка сохранения данных');
+            }
+        }
+
+        function loadData() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    transactions = data.transactions || [];
+                    
+                    // Load settings
+                    if (data.settings) {
+                        activeFilter = data.settings.activeFilter || 'all';
+                        selectedDate = data.settings.selectedDate ? new Date(data.settings.selectedDate) : new Date();
+                        selectedRangeStart = data.settings.selectedRangeStart ? new Date(data.settings.selectedRangeStart) : null;
+                        selectedRangeEnd = data.settings.selectedRangeEnd ? new Date(data.settings.selectedRangeEnd) : null;
+                        selectedWeekStart = data.settings.selectedWeekStart ? new Date(data.settings.selectedWeekStart) : null;
+                        selectedWeekEnd = data.settings.selectedWeekEnd ? new Date(data.settings.selectedWeekEnd) : null;
+                        selectedMonth = data.settings.selectedMonth ? new Date(data.settings.selectedMonth) : null;
+                        selectedYear = data.settings.selectedYear ? new Date(data.settings.selectedYear) : null;
+                    }
+                    
+                    // Update UI
+                    setActiveFilter(activeFilter);
+                    updatePeriodInfo();
+                    
+                    showNotification('✅ Данные загружены');
+                }
+            } catch (e) {
+                console.error('Ошибка загрузки:', e);
+                showNotification('❌ Ошибка загрузки данных');
+            }
+        }
+
+        // ============ EXPORT/IMPORT ============
+        function exportData() {
+            const data = {
+                app: APP_NAME,
+                version: '1.0',
+                exported: new Date().toISOString(),
+                transactions: transactions,
+                stats: {
+                    total: transactions.length,
+                    totalIncome: transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0),
+                    totalExpense: transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0)
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `получка_экспорт_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('✅ Данные экспортированы');
+        }
+
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (data.app !== APP_NAME) {
+                        throw new Error('Неверный формат файла');
+                    }
+                    
+                    if (confirm(`Импортировать ${data.transactions.length} записей?`)) {
+                        transactions = data.transactions;
+                        saveData();
+                        render();
+                        showNotification('✅ Данные импортированы');
+                    }
+                } catch (error) {
+                    console.error('Ошибка импорта:', error);
+                    showNotification('❌ Ошибка импорта данных');
+                }
+                
+                // Reset file input
+                event.target.value = '';
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // ============ UTILITIES ============
+        function showNotification(message) {
+            // Remove existing notification
+            const existing = document.querySelector('.swipe-hint');
+            if (existing) existing.remove();
+            
+            // Create new notification
+            const notification = document.createElement('div');
+            notification.className = 'swipe-hint';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Remove after 2 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        }
+
+        // ============ SERVICE WORKER FOR PWA ============
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Register service worker
+                navigator.serviceWorker.register('/sw.js').catch(err => {
+                    console.log('Service Worker registration failed:', err);
+                });
+                
+                // Check if app is installed
+                window.addEventListener('appinstalled', () => {
+                    showNotification('✅ Приложение установлено!');
+                });
+            });
+        }
+    </script>
+</body>
+</html>
